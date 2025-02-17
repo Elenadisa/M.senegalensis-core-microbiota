@@ -56,7 +56,7 @@ install.packages(c("ggplot2", "ggpubr", "ggVennDiagram", rmarkdown", "kableExtra
 Furthermore, these bioconductor packages should be installed using the the BiocManager package:  
 
 ```{r }
-BiocManager::install(c("phyloseq", "microbiomeMarker", "microbiome"))
+BiocManager::install(c("phyloseq", "microbiomeMarker", "microbiome", DESeq2))
 ```
   
 Also, you may download other packages from github:  

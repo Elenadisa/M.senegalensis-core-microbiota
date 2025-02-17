@@ -73,6 +73,37 @@ plot_piechart <- function(df, metric, taxa){
 }
 
 ################################################################################
+#                          DIFFERENTIAL ABUNDANCE DESEQ2                       #
+################################################################################
+
+daa_bar_plot <- function(df, contrast, title){
+  theme_set(theme_bw())
+  
+    #Transform data
+  # Phylum order
+  x = tapply(df$log2FoldChange, df$Phylum, function(x) max(x))
+  x = sort(x, TRUE)
+  df$Phylum = factor(as.character(df$Phylum), levels=names(x))
+  # Genus order
+  x = tapply(df$log2FoldChange, df$Genus, function(x) max(x))
+  x = sort(x, TRUE)
+  df$Genus = factor(as.character(df$Genus), levels=names(x))
+  
+    #Generate plot
+  ggplot(df) +
+    geom_col(aes(x = log2FoldChange, y = Genus, fill = Phylum)) + 
+    geom_vline(xintercept = 0.0, color = "Black", size = 0.7)  +
+    ggtitle(title) +
+    theme(
+      plot.title = element_text(hjust = 0),
+      panel.border = element_rect(colour = "black", fill=NA, size=1),
+      axis.title=element_text(size=18,face="bold"),
+      axis.text=element_text(size=25),
+      legend.text=element_text(size=25)) +
+    theme_minimal()
+}
+
+################################################################################
 #                          BETA DIVERSITY                                      #
 ################################################################################
 
