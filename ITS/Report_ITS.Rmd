@@ -364,6 +364,7 @@ The alpha diversity between both experimental conditions is not significantly di
 
 ## Spain Understory vs Spain Gap  
   
+
 ```{r AlphaDiversitySpain, fig.width=8, fig.height=6}
 #Spain data
 physeq.spain <- subset_samples(physeq.10, Country == "Spain")
@@ -388,20 +389,20 @@ The alpha diversity between both experimental conditions is not significantly di
 
 ```{r AlphaDiversityUnderstory, fig.width=8, fig.height=6}
 #Understory data
-physeq.in <- subset_samples(physeq.10, Microhabitat == "Understory")
-physeq.in <- prune_taxa(taxa_sums(physeq.in) > 1, physeq.in)
+physeq.understory <- subset_samples(physeq.10, Microhabitat == "Understory")
+physeq.understory <- prune_taxa(taxa_sums(physeq.understory) > 1, physeq.understory)
 
 #Chao Plot
-alpha_bact_under <- alpha_diversity_plot(physeq.in, "Country", paper_metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Under") + theme(strip.text = element_blank(), axis.title.y=element_blank())
+alpha_bact_under <- alpha_diversity_plot(physeq.understory, "Country", paper_metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Under") + theme(strip.text = element_blank(), axis.title.y=element_blank())
 
 #Obtain alpha-diversity plot complete
-alpha_diversity_plot(physeq.in, "Country", metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Understory")
+alpha_diversity_plot(physeq.understory, "Country", metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Understory")
 
 #alpha diversity table
-in.tb <- estimate_richness(physeq.in, measures=metrics)
-in.tb$Country <- sample_data(physeq.in)$Country
-in.tb$Microhabitat <- rep("Understory", nrow(sample_data(physeq.in)))
-kable(in.tb)
+understory.tb <- estimate_richness(physeq.understory, measures=metrics)
+understory.tb$Country <- sample_data(physeq.understory)$Country
+understory.tb$Microhabitat <- rep("Understory", nrow(sample_data(physeq.understory)))
+kable(understory.tb)
 ```
 
 The alpha diversity between both experimental conditions is significantly different in the three indices with the Kruskal wallys test and a p-value adjustment with BH. This indicates that within each group or condition, the communities have different diversity in terms of the number of species or relative abundance. In other words, there are some differences in the quantity or abundance of species within each condition.
@@ -410,20 +411,20 @@ The alpha diversity between both experimental conditions is significantly differ
 
 ```{r AlphaDiversityGap, fig.width=8, fig.height=6}
 #Gap data
-physeq.out <- subset_samples(physeq.10, Microhabitat == "Gap")
-physeq.out <- prune_taxa(taxa_sums(physeq.out) > 1, physeq.out)
+physeq.gap <- subset_samples(physeq.10, Microhabitat == "Gap")
+physeq.gap <- prune_taxa(taxa_sums(physeq.gap) > 1, physeq.gap)
 
 #Chao Plot
-alpha_bact_gap <- alpha_diversity_plot(physeq.out, "Country", paper_metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Gap") + theme(strip.text = element_blank())
+alpha_bact_gap <- alpha_diversity_plot(physeq.gap, "Country", paper_metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Gap") + theme(strip.text = element_blank())
 
 #Obtain alpha-diversity plot complete
-alpha_diversity_plot(physeq.out, "Country", metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Gap")
+alpha_diversity_plot(physeq.gap, "Country", metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Gap")
 
 #alpha diversity table
-out.tb <- estimate_richness(physeq.out, measures=metrics)
-out.tb$Country <- sample_data(physeq.out)$Country
-out.tb$Microhabitat <- rep("Gap", nrow(sample_data(physeq.out)))
-kable(out.tb)
+gap.tb <- estimate_richness(physeq.gap, measures=metrics)
+gap.tb$Country <- sample_data(physeq.gap)$Country
+gap.tb$Microhabitat <- rep("Gap", nrow(sample_data(physeq.gap)))
+kable(gap.tb)
 ```
 
 The alpha diversity between both experimental conditions is significantly different for Chao and Shannon Index, but not with Simpson with the Kruskal wallys test and a p-value adjustment with BH. This indicates that within each group or condition, the communities may have different diversity in terms of the number of species or relative abundance but the relevance is based on rare or low abundant taxa. 
@@ -489,7 +490,6 @@ pander(pairwise_bray$`Spain_Understory_vs_Senegal_Understory`)
 pander(pairwise_bray$`Spain_Gap_vs_Senegal_Gap`)
 ```
 
-
 We performed an analysis to test the homogeneity condition.  
 
 ```{r BraycurtisPERMANOVPostHoc}
@@ -540,29 +540,29 @@ The main phyla are available in all the microhabitats.
 ps.genus.rel <- transform_sample_counts(ps.genus, function(x){x / sum(x)})
 ps.genus.rel@phy_tree <- NULL
 #Obtain Spain Understory top 20 genera 
-ps.spain.in <- subset_samples(ps.genus.rel, Microhabitat == "Understory" & Country == "Spain")
-top.spain.in <- top_taxa(ps.spain.in, n = 20)
-ps.top.spain.in <- prune_taxa(top.spain.in, ps.spain.in)
+ps.spain.understory <- subset_samples(ps.genus.rel, Microhabitat == "Understory" & Country == "Spain")
+top.spain.understory <- top_taxa(ps.spain.understory, n = 20)
+ps.top.spain.understory <- prune_taxa(top.spain.understory, ps.spain.understory)
 
 #Obtain Spain Gap top 20 genera
-ps.spain.out <- subset_samples(ps.genus.rel, Microhabitat == "Gap" & Country == "Spain")
-top.spain.out <- top_taxa(ps.spain.out, n = 20)
-ps.top.spain.out <- prune_taxa(top.spain.out, ps.spain.out)
+ps.spain.gap <- subset_samples(ps.genus.rel, Microhabitat == "Gap" & Country == "Spain")
+top.spain.gap <- top_taxa(ps.spain.gap, n = 20)
+ps.top.spain.gap <- prune_taxa(top.spain.gap, ps.spain.gap)
 
 #Obtain Senegal Understory top 20 genera
-ps.senegal.in <- subset_samples(ps.genus.rel, Microhabitat == "Understory" & Country == "Senegal")
-top.senegal.in <- top_taxa(ps.senegal.in, n = 20)
-ps.top.senegal.in <- prune_taxa(top.senegal.in, ps.senegal.in)
+ps.senegal.understory <- subset_samples(ps.genus.rel, Microhabitat == "Understory" & Country == "Senegal")
+top.senegal.understory <- top_taxa(ps.senegal.understory, n = 20)
+ps.top.senegal.understory <- prune_taxa(top.senegal.understory, ps.senegal.understory)
 
 #Obtain Senegal Gap top 20 genera
-ps.senegal.out <- subset_samples(ps.genus.rel, Microhabitat == "Gap" & Country == "Senegal")
-top.senegal.out <- top_taxa(ps.senegal.out, n = 20)
-ps.top.senegal.out <- prune_taxa(top.senegal.out, ps.senegal.out)
+ps.senegal.gap <- subset_samples(ps.genus.rel, Microhabitat == "Gap" & Country == "Senegal")
+top.senegal.gap <- top_taxa(ps.senegal.gap, n = 20)
+ps.top.senegal.gap <- prune_taxa(top.senegal.gap, ps.senegal.gap)
 
-ps.top.genus <- merge_phyloseq(ps.top.spain.in, 
-                               ps.top.spain.out, 
-                               ps.top.senegal.in, 
-                               ps.top.senegal.out)
+ps.top.genus <- merge_phyloseq(ps.top.spain.understory, 
+                               ps.top.spain.gap, 
+                               ps.top.senegal.understory, 
+                               ps.top.senegal.gap)
 #Create a dataframe from phyloseq object
 df_genus_top <- psmelt(ps.top.genus)
 df_genus_top <- df_genus_top[!df_genus_top$Abundance == 0,]
@@ -598,6 +598,8 @@ top_genus_bact
 
 ## Differencial Abundance
 
+### Differences in microhabitats per each Country
+
 ```{r DAASenegal}
 physeq.senegal.genus <- tax_glom(physeq.senegal, taxrank="Genus")
 senegal_genus_l <- get_taxa_unique(physeq.senegal.genus, taxonomic.rank = "Genus")
@@ -614,9 +616,107 @@ diagdds_senegal <-  DESeq(ds_senegal,
 res.senegal <- results(diagdds_senegal, cooksCutoff = F,
                contrast = c("Microhabitat", "Understory", "Gap") )
 sigtab.senegal <- res.senegal[which(res.senegal$padj < alpha), ]
-sigtab.senegal <- cbind(as(sigtab.senegal, "data.frame"), as(tax_table(physeq.senegal)[rownames(sigtab.senegal), ], "matrix"))
+sigtab.senegal <- cbind(as(sigtab.senegal, "data.frame"), as(tax_table(physeq.senegal.genus)[rownames(sigtab.senegal), ], "matrix"))
 
-senegal.daa.barplot <- daa_bar_plot(sigtab.senegal, contrast, "Senegal      \nGap // Understory") + theme(plot.title = element_text(hjust = 0.9))
+senegal.daa.barplot <- daa_bar_plot(sigtab.senegal, contrast, "Senegal      \nGap // Understory") + 
+  theme(
+  plot.title = element_text(hjust = 0.9, size = 18), 
+  axis.text=element_text(size=12), 
+  axis.title=element_text(size=14,face="bold"),
+  legend.text=element_text(size=12)
+  )
+```
+
+```{r DAASpain}
+physeq.spain.genus <- tax_glom(physeq.spain, taxrank="Genus")
+spain_genus_l <- get_taxa_unique(physeq.spain.genus, taxonomic.rank = "Genus")
+spain_genus_l <- spain_genus_l[!spain_genus_l %in% genus_to_remove]
+physeq.spain.genus <- subset_taxa(physeq.spain.genus, Genus %in% spain_genus_l)
+alpha <- 0.05
+ds_spain <- phyloseq_to_deseq2(physeq.spain.genus, ~ Microhabitat)
+
+
+diagdds_spain <-  DESeq(ds_spain, 
+                  test="Wald", 
+                  fitType="parametric", 
+                  sfType = 'poscounts')
+res.spain <- results(diagdds_spain, cooksCutoff = F,
+               contrast = c("Microhabitat", "Understory", "Gap") )
+sigtab.spain <- res.spain[which(res.spain$padj < alpha), ]
+sigtab.spain <- cbind(as(sigtab.spain, "data.frame"), as(tax_table(physeq.spain.genus)[rownames(sigtab.spain), ], "matrix"))
+
+spain.daa.barplot <- daa_bar_plot(sigtab.spain, contrast, "Spain       \nGap // Understory") + 
+  theme(
+  plot.title = element_text(hjust = 0.9, size = 18), 
+  axis.text=element_text(size=12), 
+  axis.title=element_text(size=14,face="bold"),
+  legend.text=element_text(size=12)
+  )
+```
+
+```{r DAABarplotCountry, fig.width=16, fig.height=14}
+ggarrange(senegal.daa.barplot, spain.daa.barplot)
+```
+  
+### Differences in the countries per each microhabitat
+  
+```{r DAAUnderstory}
+physeq.understory.genus <- tax_glom(physeq.understory, taxrank="Genus")
+understory_genus_l <- get_taxa_unique(physeq.understory.genus, taxonomic.rank = "Genus")
+understory_genus_l <- understory_genus_l[!understory_genus_l %in% genus_to_remove]
+physeq.understory.genus <- subset_taxa(physeq.understory.genus, Genus %in% understory_genus_l)
+alpha <- 0.05
+ds_understory <- phyloseq_to_deseq2(physeq.understory.genus, ~ Country)
+
+
+diagdds_understory <-  DESeq(ds_understory, 
+                  test="Wald", 
+                  fitType="parametric", 
+                  sfType = 'poscounts')
+res.understory <- results(diagdds_understory, cooksCutoff = F,
+               contrast = c("Country", "Senegal", "Spain") )
+sigtab.understory <- res.understory[which(res.understory$padj < alpha), ]
+sigtab.understory <- cbind(as(sigtab.understory, "data.frame"), as(tax_table(physeq.understory.genus)[rownames(sigtab.understory), ], "matrix"))
+
+understory.daa.barplot <- daa_bar_plot(sigtab.understory, contrast, "Understory   \nSpain // Senegal") + 
+  theme(
+  plot.title = element_text(hjust = 0.9, size = 20), 
+  axis.text=element_text(size=14), 
+  axis.title=element_text(size=16,face="bold"),
+  legend.text=element_text(size=14)
+  )
+
+```
+
+```{r DAAGap}
+physeq.gap.genus <- tax_glom(physeq.gap, taxrank="Genus")
+gap_genus_l <- get_taxa_unique(physeq.gap.genus, taxonomic.rank = "Genus")
+gap_genus_l <- gap_genus_l[!gap_genus_l %in% genus_to_remove]
+physeq.gap.genus <- subset_taxa(physeq.gap.genus, Genus %in% gap_genus_l)
+alpha <- 0.05
+ds_gap <- phyloseq_to_deseq2(physeq.gap.genus, ~ Country)
+
+
+diagdds_gap <-  DESeq(ds_gap, 
+                  test="Wald", 
+                  fitType="parametric", 
+                  sfType = 'poscounts')
+res.gap <- results(diagdds_gap, cooksCutoff = F,
+               contrast = c("Country", "Senegal", "Spain") )
+sigtab.gap <- res.gap[which(res.gap$padj < alpha), ]
+sigtab.gap <- cbind(as(sigtab.gap, "data.frame"), as(tax_table(physeq.gap.genus)[rownames(sigtab.gap), ], "matrix"))
+
+gap.daa.barplot <- daa_bar_plot(sigtab.gap, contrast, "Gap        \nSpain // Senegal") + 
+  theme(
+  plot.title = element_text(hjust = 0.9, size = 20), 
+  axis.text=element_text(size=14), 
+  axis.title=element_text(size=16,face="bold"),
+  legend.text=element_text(size=14)
+  )
+```
+
+```{r DAABarplotMicrohabitat, fig.width=18, fig.height=26}
+ggarrange(understory.daa.barplot, gap.daa.barplot)
 ```
 
 
@@ -627,41 +727,39 @@ Despite the microorganisms community structure is different, there are some gene
 To find the common genera exclusive from understory we need to perform several steps:  
 **1:** Obtain a subset of the samples in understory and gap condition.  
 **2:** Agglomerate ASVs at Genus level.  
-**3:** Calculate relative abundance of each genera 
-**4:** filter low abundant taxa (less than 0.15%).  
+**3:** Calculate relative abundance of each genera.  
+**4:** Filter low abundant taxa (less than 0.2%).  
 **5:** Eliminate from understory all the genera that are available in gap samples.  
 **6:** Retain those Genera in understory that are within 100% of the samples.  
 **7:** Find common genera between Senegal and Spain Understories.
   
-
-
 ```{r SenegalAbundance}
 #Obtain A subset from Senegal Gap Samples
-ps.senegal.out <- subset_samples(physeq.css, Microhabitat == "Gap" & Country == "Senegal")
-ps.senegal.out.clean <- prune_taxa(taxa_sums(ps.senegal.out) > 1, ps.senegal.out)
-ps.senegal.out.genus <- tax_glom(ps.senegal.out.clean, taxrank="Genus")
+ps.senegal.gap <- subset_samples(physeq.css, Microhabitat == "Gap" & Country == "Senegal")
+ps.senegal.gap.clean <- prune_taxa(taxa_sums(ps.senegal.gap) > 1, ps.senegal.gap)
+ps.senegal.gap.genus <- tax_glom(ps.senegal.gap.clean, taxrank="Genus")
 #Calculate relative abundance
-ps.senegal.out.genus_rel = transform_sample_counts(ps.senegal.out.genus, function(x){(x / sum(x))*100})
+ps.senegal.gap.genus_rel = transform_sample_counts(ps.senegal.gap.genus, function(x){(x / sum(x))*100})
 #obtain mean abundance per genus
-df.senegal.out <- psmelt(ps.senegal.out.genus_rel)
-df.senegal.out_mean <- df.senegal.out %>% group_by(Genus) %>% summarize(Gap=mean(Abundance, na.rm=TRUE))
+df.senegal.gap <- psmelt(ps.senegal.gap.genus_rel)
+df.senegal.gap_mean <- df.senegal.gap %>% group_by(Genus) %>% summarize(Gap=mean(Abundance, na.rm=TRUE))
 
 #Obtain A subset from Senegal Understory Samples
-ps.senegal.in <- subset_samples(physeq.css, Microhabitat == "Understory" & Country == "Senegal")
-ps.senegal.in.clean <- prune_taxa(taxa_sums(ps.senegal.in) > 1, ps.senegal.in)
-ps.senegal.in.genus <- tax_glom(ps.senegal.in.clean, taxrank="Genus")
+ps.senegal.understory <- subset_samples(physeq.css, Microhabitat == "Understory" & Country == "Senegal")
+ps.senegal.understory.clean <- prune_taxa(taxa_sums(ps.senegal.understory) > 1, ps.senegal.understory)
+ps.senegal.understory.genus <- tax_glom(ps.senegal.understory.clean, taxrank="Genus")
 #Calculate relative abundance 
-ps.senegal.in.genus_rel = transform_sample_counts(ps.senegal.in.genus, function(x){(x / sum(x))*100})
+ps.senegal.understory.genus_rel = transform_sample_counts(ps.senegal.understory.genus, function(x){(x / sum(x))*100})
 #obtain mean abundance per genus
-df.senegal.in <- psmelt(ps.senegal.in.genus_rel)
-df.senegal.in_mean <- df.senegal.in %>% group_by(Genus) %>% summarize(Understory=mean(Abundance, na.rm=TRUE))
+df.senegal.understory <- psmelt(ps.senegal.understory.genus_rel)
+df.senegal.understory_mean <- df.senegal.understory %>% group_by(Genus) %>% summarize(Understory=mean(Abundance, na.rm=TRUE))
 
-df.senegal.mean <- merge(df.senegal.out_mean, df.senegal.in_mean, by = "Genus") %>%
+df.senegal.mean <- merge(df.senegal.gap_mean, df.senegal.understory_mean, by = "Genus") %>%
  replace(is.na(.), 0)
 
 plt_senegal <- ggplot(df.senegal.mean, aes(x = Understory, y = Gap)) +
   geom_point(alpha = 0.7) +
-  scale_x_log10() + scale_y_log10() +  # Escala logarítmica si hay valores muy pequeños
+  scale_x_log10() + scale_y_log10() +  #Logarithmic scale as there are small values
   geom_abline(slope = 1, intercept = 0, color = "red") + 
   geom_vline(xintercept = 0.007, linetype = "dashed", color = "darkgreen", size = 1) +
   geom_hline(yintercept = 0.007, linetype = "dotted", color = "blue", size = 1) +
@@ -674,26 +772,26 @@ plt_senegal <- ggplot(df.senegal.mean, aes(x = Understory, y = Gap)) +
 
 ```{r SpainAbundance}
 #Obtain A subset from Spain Gap Samples
-ps.spain.out <- subset_samples(physeq.css, Microhabitat == "Gap" & Country == "Spain")
-ps.spain.out.clean <- prune_taxa(taxa_sums(ps.spain.out) > 1, ps.spain.out)
-ps.spain.out.genus <- tax_glom(ps.spain.out.clean, taxrank="Genus")
+ps.spain.gap <- subset_samples(physeq.css, Microhabitat == "Gap" & Country == "Spain")
+ps.spain.gap.clean <- prune_taxa(taxa_sums(ps.spain.gap) > 1, ps.spain.gap)
+ps.spain.gap.genus <- tax_glom(ps.spain.gap.clean, taxrank="Genus")
 #Calculate relative abundance
-ps.spain.out.genus_rel = transform_sample_counts(ps.spain.out.genus, function(x){(x / sum(x))*100})
+ps.spain.gap.genus_rel = transform_sample_counts(ps.spain.gap.genus, function(x){(x / sum(x))*100})
 #obtain mean abundance per genus
-df.spain.out <- psmelt(ps.spain.out.genus_rel)
-df.spain.out_mean <- df.spain.out %>% group_by(Genus) %>% summarize(Gap=mean(Abundance, na.rm=TRUE))
+df.spain.gap <- psmelt(ps.spain.gap.genus_rel)
+df.spain.gap_mean <- df.spain.gap %>% group_by(Genus) %>% summarize(Gap=mean(Abundance, na.rm=TRUE))
 
 #Obtain A subset from spain Understory Samples
-ps.spain.in <- subset_samples(physeq.css, Microhabitat == "Understory" & Country == "Spain")
-ps.spain.in.clean <- prune_taxa(taxa_sums(ps.spain.in) > 1, ps.spain.in)
-ps.spain.in.genus <- tax_glom(ps.spain.in.clean, taxrank="Genus")
+ps.spain.understory <- subset_samples(physeq.css, Microhabitat == "Understory" & Country == "Spain")
+ps.spain.understory.clean <- prune_taxa(taxa_sums(ps.spain.understory) > 1, ps.spain.understory)
+ps.spain.understory.genus <- tax_glom(ps.spain.understory.clean, taxrank="Genus")
 #Calculate relative abundance and filter out low abundant genera
-ps.spain.in.genus_rel = transform_sample_counts(ps.spain.in.genus, function(x){(x / sum(x))*100})
+ps.spain.understory.genus_rel = transform_sample_counts(ps.spain.understory.genus, function(x){(x / sum(x))*100})
 #obtain mean abundance per genus
-df.spain.in <- psmelt(ps.spain.in.genus_rel)
-df.spain.in_mean <- df.spain.in %>% group_by(Genus) %>% summarize(Understory=mean(Abundance, na.rm=TRUE))
+df.spain.understory <- psmelt(ps.spain.understory.genus_rel)
+df.spain.understory_mean <- df.spain.understory %>% group_by(Genus) %>% summarize(Understory=mean(Abundance, na.rm=TRUE))
 
-df.spain.mean <- merge(df.spain.out_mean, df.spain.in_mean, by = "Genus") %>%
+df.spain.mean <- merge(df.spain.gap_mean, df.spain.understory_mean, by = "Genus") %>%
  replace(is.na(.), 0)
 
 plt_spain <- ggplot(df.spain.mean, aes(x = Understory, y = Gap)) +
@@ -721,16 +819,16 @@ annotate_figure(plt, left = textGrob("Relative Abundance Gap", rot = 90, gp = gp
   
 ```{r SenegalVenn}
 #Filter Senegal Gap by relative abundance
-ps.senegal.out.genus1 <- filter_taxa(ps.senegal.out.genus_rel, function(x){ mean(x) >= 0.2}, prune = TRUE)
+ps.senegal.gap.genus1 <- filter_taxa(ps.senegal.gap.genus_rel, function(x){ mean(x) >= 0.2}, prune = TRUE)
 #Obtain Senegal gap genus list
-ps.senegal.out.l <- get_taxa_unique(ps.senegal.out.genus1, taxonomic.rank="Genus")
+ps.senegal.gap.l <- get_taxa_unique(ps.senegal.gap.genus1, taxonomic.rank="Genus")
 
 #Filter Senegal Understory by relative abundance
-ps.senegal.in.genus1 <- filter_taxa(ps.senegal.in.genus_rel, function(x){ mean(x) >= 0.2}, prune = TRUE)
+ps.senegal.understory.genus1 <- filter_taxa(ps.senegal.understory.genus_rel, function(x){ mean(x) >= 0.2}, prune = TRUE)
 
 #Plot Venn Diagram
-lst1 <- list(Gap= ps.senegal.out.l,
-            Unde= get_taxa_unique(ps.senegal.in.genus1, taxonomic.rank="Genus"))
+lst1 <- list(Gap= ps.senegal.gap.l,
+            Unde= get_taxa_unique(ps.senegal.understory.genus1, taxonomic.rank="Genus"))
 
 ven_sen_bact <- ggVennDiagram(lst1, label_alpha = 0, set_size = 6, label_size = 6) +  scale_fill_gradient(low = "#F4FAFE", high = "#4981BF") +  theme(legend.position = "none") + scale_x_continuous(expand = expansion(mult = .2)) + ggtitle("Senegal")
 ven_sen_bact 
@@ -738,14 +836,14 @@ ven_sen_bact
 
 ```{r SenegalExclusive}
 #Remove Gap genera in Understory
-senegal_in_exclusive <- subset_taxa(ps.senegal.in.genus1, !Genus %in% ps.senegal.out.l)
-senegal_in_exclusive.l <- get_taxa_unique(senegal_in_exclusive, taxonomic.rank="Genus")
+senegal_understory_exclusive <- subset_taxa(ps.senegal.understory.genus1, !Genus %in% ps.senegal.gap.l)
+senegal_understory_exclusive.l <- get_taxa_unique(senegal_understory_exclusive, taxonomic.rank="Genus")
 
 #Obtain Genera that are in the 100% samples
-senegal_in_exclusive.all <- prune_taxa(rowSums(otu_table(senegal_in_exclusive) != 0) == ncol(otu_table(senegal_in_exclusive)), senegal_in_exclusive)
+senegal_understory_exclusive.all <- prune_taxa(rowSums(otu_table(senegal_understory_exclusive) != 0) == ncol(otu_table(senegal_understory_exclusive)), senegal_understory_exclusive)
 
-pander(paste("There are ", length(senegal_in_exclusive.l)," exclusive genera in Senegal understory: ",paste(senegal_in_exclusive.l, collapse = ", ")))  
-pander(paste("Among all the exclusive genera in Senegal understory,", length(get_taxa_unique(senegal_in_exclusive.all, taxonomic.rank="Genus"))," are within all the samples: ",paste(get_taxa_unique(senegal_in_exclusive.all, taxonomic.rank="Genus"), collapse = ", ")))  
+pander(paste("There are ", length(senegal_understory_exclusive.l)," exclusive genera in Senegal understory: ",paste(senegal_understory_exclusive.l, collapse = ", ")))  
+pander(paste("Among all the exclusive genera in Senegal understory,", length(get_taxa_unique(senegal_understory_exclusive.all, taxonomic.rank="Genus"))," are within all the samples: ",paste(get_taxa_unique(senegal_understory_exclusive.all, taxonomic.rank="Genus"), collapse = ", ")))  
 ```
   
 **Exclusive Spain**  
@@ -753,16 +851,16 @@ pander(paste("Among all the exclusive genera in Senegal understory,", length(get
 
 ```{r SpainVenn}
 #Filter Spain Gap by relative abundance
-ps.spain.out.genus1 <- filter_taxa(ps.spain.out.genus_rel, function(x){ mean(x) >= 0.2}, prune = TRUE)
+ps.spain.gap.genus1 <- filter_taxa(ps.spain.gap.genus_rel, function(x){ mean(x) >= 0.2}, prune = TRUE)
 #Obtain list of Spain Gap genera
-ps.spain.out.l <- get_taxa_unique(ps.spain.out.genus1, taxonomic.rank="Genus")
+ps.spain.gap.l <- get_taxa_unique(ps.spain.gap.genus1, taxonomic.rank="Genus")
 
 #Filter Spain Understory by relative Abundance
-ps.spain.in.genus1 <- filter_taxa(ps.spain.in.genus_rel, function(x){ mean(x) >= 0.2}, prune = TRUE)
+ps.spain.understory.genus1 <- filter_taxa(ps.spain.understory.genus_rel, function(x){ mean(x) >= 0.2}, prune = TRUE)
 
 #Plot Venn Diagram
-lst2 <- list(Gap= ps.spain.out.l,
-            Unde= get_taxa_unique(ps.spain.in.genus1, taxonomic.rank="Genus"))
+lst2 <- list(Gap= ps.spain.gap.l,
+            Unde= get_taxa_unique(ps.spain.understory.genus1, taxonomic.rank="Genus"))
 
 ven_sp_bact <- ggVennDiagram(lst2, label_alpha = 0, set_size = 6, label_size = 6) +  scale_fill_gradient(low = "#F4FAFE", high = "#4981BF") +  theme(legend.position = "none") + scale_x_continuous(expand = expansion(mult = .2)) + ggtitle("Spain")
 ven_sp_bact 
@@ -770,13 +868,13 @@ ven_sp_bact
 
 ```{r SpainExclusive}
 #Remove Gap genera
-spain_in_exclusive <- subset_taxa(ps.spain.in.genus1, !Genus %in% ps.spain.out.l)
-spain_in_exclusive.l <- get_taxa_unique(spain_in_exclusive, taxonomic.rank="Genus")
-pander(paste("There are ", length(spain_in_exclusive.l)," exclusive genera in Spain understory: ",paste(spain_in_exclusive.l, collapse = ", ")))
+spain_understory_exclusive <- subset_taxa(ps.spain.understory.genus1, !Genus %in% ps.spain.gap.l)
+spain_understory_exclusive.l <- get_taxa_unique(spain_understory_exclusive, taxonomic.rank="Genus")
+pander(paste("There are ", length(spain_understory_exclusive.l)," exclusive genera in Spain understory: ",paste(spain_understory_exclusive.l, collapse = ", ")))
 
 #Obtain Genera that are in the 100% samples
-spain_in_exclusive.all <- prune_taxa(rowSums(otu_table(spain_in_exclusive) != 0) == ncol(otu_table(spain_in_exclusive)), spain_in_exclusive)
-pander(paste("Among all the exclusive genera in Spain understory,", length(get_taxa_unique(spain_in_exclusive.all, taxonomic.rank="Genus"))," are within all the samples: ",paste(get_taxa_unique(spain_in_exclusive.all, taxonomic.rank="Genus"), collapse = ", ")))  
+spain_understory_exclusive.all <- prune_taxa(rowSums(otu_table(spain_understory_exclusive) != 0) == ncol(otu_table(spain_understory_exclusive)), spain_understory_exclusive)
+pander(paste("Among all the exclusive genera in Spain understory,", length(get_taxa_unique(spain_understory_exclusive.all, taxonomic.rank="Genus"))," are within all the samples: ",paste(get_taxa_unique(spain_understory_exclusive.all, taxonomic.rank="Genus"), collapse = ", ")))  
 ```
   
 **Core Microbiota**  
@@ -784,23 +882,22 @@ pander(paste("Among all the exclusive genera in Spain understory,", length(get_t
 We want to compare if there are shared taxa between every microhabitat:  
 
 ```{r AllVenn}
-lst3 <- list(Sp.Gap= ps.spain.out.l,
-            Sp.Unde= get_taxa_unique(ps.spain.in.genus1, taxonomic.rank="Genus"),
-            Sn.Gap= ps.senegal.out.l,
-            Sn.Unde= get_taxa_unique(ps.senegal.in.genus1, taxonomic.rank="Genus"))
+lst3 <- list(Sp.Gap= ps.spain.gap.l,
+            Sp.Unde= get_taxa_unique(ps.spain.understory.genus1, taxonomic.rank="Genus"),
+            Sn.Gap= ps.senegal.gap.l,
+            Sn.Unde= get_taxa_unique(ps.senegal.understory.genus1, taxonomic.rank="Genus"))
 
 ven_bact <- ggVennDiagram(lst3, label_alpha = 0, set_size = 6, label_size = 6) +  scale_fill_gradient(low = "#F4FAFE", high = "#4981BF") +  theme(legend.position = "none") + scale_x_continuous(expand = expansion(mult = .2))
 ven_bact 
 ```
 
 ```{r CoreMicrobiota}
-core_microbiota <- intersect(get_taxa_unique(spain_in_exclusive, taxonomic.rank = "Genus"), get_taxa_unique(senegal_in_exclusive, taxonomic.rank = "Genus"))
+core_microbiota <- intersect(get_taxa_unique(spain_understory_exclusive, taxonomic.rank = "Genus"), get_taxa_unique(senegal_understory_exclusive, taxonomic.rank = "Genus"))
 pander(paste("Common genera between Senegal and Spain exclusive understory are: ", paste(core_microbiota, collapse=", ")))
 
 
-core_microbiota_all <- intersect(get_taxa_unique(spain_in_exclusive.all, taxonomic.rank = "Genus"), get_taxa_unique(senegal_in_exclusive.all, taxonomic.rank = "Genus"))
+core_microbiota_all <- intersect(get_taxa_unique(spain_understory_exclusive.all, taxonomic.rank = "Genus"), get_taxa_unique(senegal_understory_exclusive.all, taxonomic.rank = "Genus"))
 
 pander(paste("Among the shared genera between Senegal and Spain exclusive understory, ", length(core_microbiota_all), "are within all samples: ", paste(core_microbiota_all, collapse=", ")))
 ```
-
 
