@@ -596,9 +596,7 @@ top_genus_bact <- plot_abundance_by_taxa(top_genus_sumarize_ordered, "Genus_micr
 top_genus_bact
 ```
 
-## Differencial Abundance
-
-### Differences in microhabitats per each Country
+## Differencial Abundance between microhabitats
 
 ```{r DAASenegal}
 physeq.senegal.genus <- tax_glom(physeq.senegal, taxrank="Genus")
@@ -658,67 +656,6 @@ spain.daa.barplot <- daa_bar_plot(sigtab.spain, contrast, "Spain       \nGap // 
 ggarrange(senegal.daa.barplot, spain.daa.barplot)
 ```
   
-### Differences in the countries per each microhabitat
-  
-```{r DAAUnderstory}
-physeq.understory.genus <- tax_glom(physeq.understory, taxrank="Genus")
-understory_genus_l <- get_taxa_unique(physeq.understory.genus, taxonomic.rank = "Genus")
-understory_genus_l <- understory_genus_l[!understory_genus_l %in% genus_to_remove]
-physeq.understory.genus <- subset_taxa(physeq.understory.genus, Genus %in% understory_genus_l)
-alpha <- 0.05
-ds_understory <- phyloseq_to_deseq2(physeq.understory.genus, ~ Country)
-
-
-diagdds_understory <-  DESeq(ds_understory, 
-                  test="Wald", 
-                  fitType="parametric", 
-                  sfType = 'poscounts')
-res.understory <- results(diagdds_understory, cooksCutoff = F,
-               contrast = c("Country", "Senegal", "Spain") )
-sigtab.understory <- res.understory[which(res.understory$padj < alpha), ]
-sigtab.understory <- cbind(as(sigtab.understory, "data.frame"), as(tax_table(physeq.understory.genus)[rownames(sigtab.understory), ], "matrix"))
-
-understory.daa.barplot <- daa_bar_plot(sigtab.understory, contrast, "Understory   \nSpain // Senegal") + 
-  theme(
-  plot.title = element_text(hjust = 0.9, size = 20), 
-  axis.text=element_text(size=14), 
-  axis.title=element_text(size=16,face="bold"),
-  legend.text=element_text(size=14)
-  )
-
-```
-
-```{r DAAGap}
-physeq.gap.genus <- tax_glom(physeq.gap, taxrank="Genus")
-gap_genus_l <- get_taxa_unique(physeq.gap.genus, taxonomic.rank = "Genus")
-gap_genus_l <- gap_genus_l[!gap_genus_l %in% genus_to_remove]
-physeq.gap.genus <- subset_taxa(physeq.gap.genus, Genus %in% gap_genus_l)
-alpha <- 0.05
-ds_gap <- phyloseq_to_deseq2(physeq.gap.genus, ~ Country)
-
-
-diagdds_gap <-  DESeq(ds_gap, 
-                  test="Wald", 
-                  fitType="parametric", 
-                  sfType = 'poscounts')
-res.gap <- results(diagdds_gap, cooksCutoff = F,
-               contrast = c("Country", "Senegal", "Spain") )
-sigtab.gap <- res.gap[which(res.gap$padj < alpha), ]
-sigtab.gap <- cbind(as(sigtab.gap, "data.frame"), as(tax_table(physeq.gap.genus)[rownames(sigtab.gap), ], "matrix"))
-
-gap.daa.barplot <- daa_bar_plot(sigtab.gap, contrast, "Gap        \nSpain // Senegal") + 
-  theme(
-  plot.title = element_text(hjust = 0.9, size = 20), 
-  axis.text=element_text(size=14), 
-  axis.title=element_text(size=16,face="bold"),
-  legend.text=element_text(size=14)
-  )
-```
-
-```{r DAABarplotMicrohabitat, fig.width=18, fig.height=26}
-ggarrange(understory.daa.barplot, gap.daa.barplot)
-```
-
 
 # Analysis Core Microbiota
 
@@ -761,8 +698,8 @@ plt_senegal <- ggplot(df.senegal.mean, aes(x = Understory, y = Gap)) +
   geom_point(alpha = 0.7) +
   scale_x_log10() + scale_y_log10() +  #Logarithmic scale as there are small values
   geom_abline(slope = 1, intercept = 0, color = "red") + 
-  geom_vline(xintercept = 0.007, linetype = "dashed", color = "darkgreen", size = 1) +
-  geom_hline(yintercept = 0.007, linetype = "dotted", color = "blue", size = 1) +
+  geom_vline(xintercept = 0.2, linetype = "dashed", color = "darkgreen", size = 1) +
+  geom_hline(yintercept = 0.2, linetype = "dotted", color = "blue", size = 1) +
   labs(x = "Relative Abundance Understory", 
        y = "Relative Abundance Gap", 
        title = "Senegal") +
@@ -798,8 +735,8 @@ plt_spain <- ggplot(df.spain.mean, aes(x = Understory, y = Gap)) +
   geom_point(alpha = 0.7) +
   scale_x_log10() + scale_y_log10() +  # Logaritmic scale
   geom_abline(slope = 1, intercept = 0, color = "red") + 
-  geom_vline(xintercept = 0.007, linetype = "dashed", color = "darkgreen", size = 1) +
-  geom_hline(yintercept = 0.007, linetype = "dotted", color = "blue", size = 1) +
+  geom_vline(xintercept = 0.2, linetype = "dashed", color = "darkgreen", size = 1) +
+  geom_hline(yintercept = 0.2, linetype = "dotted", color = "blue", size = 1) +
   labs(x = "Relative Abundance Understory", 
        y = "Relative Abundance Gap", 
        title = "Spain") +
@@ -900,4 +837,3 @@ core_microbiota_all <- intersect(get_taxa_unique(spain_understory_exclusive.all,
 
 pander(paste("Among the shared genera between Senegal and Spain exclusive understory, ", length(core_microbiota_all), "are within all samples: ", paste(core_microbiota_all, collapse=", ")))
 ```
-
