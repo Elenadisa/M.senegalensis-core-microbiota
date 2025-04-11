@@ -237,53 +237,7 @@ kable(genus_count_df, row.names = FALSE, caption = "Number of genera identified 
   
 As we can see in the table there are not significant differences in terms of the number of different genera in the microhabitats of the same country, but there are between the different countries.
   
-**At Family level:**
 
-```{r ObtainFamilyData}
-#agglomerate taxonomic results to Family level
-ps.family_all <- tax_glom(physeq.10, taxrank="Family")
-family_l <- get_taxa_unique(ps.family_all, taxonomic.rank="Family")
-
-#remove unasigned Families
-family_to_remove <- c(NA, "uncultured")
-family_l <- family_l[!family_l %in% family_to_remove]
-ps.family <- subset_taxa(ps.family_all, Family %in% family_l)
-
-#Obtain a df and remove abundance 0
-family_df <- psmelt(ps.family)
-family_df <- family_df[!family_df$Abundance == 0,]
-
-#Count the number of unique families per sample
-family_count_sample_df <- family_df %>%
-  group_by(SampleID) %>%
-  summarise(Family_nb = length(unique(Family)))
-family_count_sample_df$Country <- sam_data(physeq.clean)$Country
-family_count_sample_df$Microhabitat <- sam_data(physeq.clean)$Microhabitat
-
-#ANOVA
-anova <- aov(Family_nb ~ Country * Microhabitat, data = family_count_sample_df)
-pander(summary(anova))
-
-#Post-hoc Tukey
-tukey <- TukeyHSD(anova)
-letters <- multcompLetters(tukey$`Country:Microhabitat`[, "p adj"])$Letters
-letters <- as.data.frame(letters)
-new_cols <- do.call(rbind, strsplit(rownames(letters), ":")) 
-letters$Country <- new_cols[,1]
-letters$Microhabitat <- new_cols[,2]
-
-#Mean and SD of the number of Families per Country and Microhabitat
-family_count_df <- family_count_sample_df %>%
-  group_by(Country, Microhabitat) %>%
-  summarise(Family_mean = mean(Family_nb), SD = sd(Family_nb))
-
-family_count_df <- merge(family_count_df, letters, by.x = c("Country", "Microhabitat"), by.y = c("Country", "Microhabitat"))
-
-kable(family_count_df, row.names = FALSE, caption = "Number of families identified per experimental condition. The table presents the total number of families detected in each experimental condition (Understory vs Gap), without considering their abundances. This provides an overview of the taxonomic diversity present in each condition based solely on the presence of families.")
-```
-  
-As we can see in the table there are not significant differences in terms of the number of different families in the microhabitats of the same country, but there are between the different countries.
-  
 **At Phylum level**
 
 ```{r ObtainPhylumData}
@@ -330,14 +284,11 @@ As we can see in the table there are not significant differences in terms of the
 Alpha diversity refers to the number of species or the diversity of a community in a single sample. It can be measured using various indices:  
 
 -**Chao**: Measures species richness, including both observed and undetected species, by estimating the number of species likely present in a community based on the frequency of rare species.  
--**Shannon**: Considers both species richness and relative abundance (or evenness). A high index value indicates greater richness as well as a more uniform distribution of species. If all species have similar abundances, the value is higher.  
--**Simpson**: Also combines richness and relative abundance but gives more weight to the most abundant species. It is expressed as the probability that two randomly selected individuals belong to the same species. Lower values indicate higher diversity (lower probability that two individuals are from the same species). Higher values indicate lower diversity (a dominant species). If a species is extremely dominant in a community, the Simpson index will be high.  
-  
+
 
 ```{r prepare data}
 #STABLISH WHICH ALPHA DIVERSITY METRICS DO YOU WANT TO CALCULATE
-metrics <- c("Shannon", "Simpson", "Chao1")
-paper_metrics <- c("Chao1")
+metrics <- c("Chao1")
 
 #STABLIS THE COMPARISONS BETWEEN GROUPS DO YOU WANT TO CALCULATE
 my_comparisons_microhabitat <-list(c("Understory", "Gap"))
@@ -355,10 +306,8 @@ physeq.senegal <- subset_samples(physeq.10, Country == "Senegal")
 physeq.senegal <- prune_taxa(taxa_sums(physeq.senegal) > 1, physeq.senegal)
 
 #Chao Plot
-alpha_bact_senegal <- alpha_diversity_plot(physeq.senegal, "Microhabitat", paper_metrics, my_comparisons_microhabitat, stat_metrics, asterisk = FALSE, "Senegal") + theme(strip.text = element_blank(), axis.title.y=element_blank())
-
-#Obtain alpha-diversity plot complete
-alpha_diversity_plot(physeq.senegal, "Microhabitat", metrics, my_comparisons_microhabitat, stat_metrics, asterisk = FALSE, "Senegal")
+alpha_bact_senegal <- alpha_diversity_plot(physeq.senegal, "Microhabitat", metrics, my_comparisons_microhabitat, stat_metrics, asterisk = FALSE, "Senegal") + theme(strip.text = element_blank(), axis.title.y=element_blank())
+alpha_bact_senegal
 
 #alpha diversity table
 senegal.tb <- estimate_richness(physeq.senegal, measures=metrics)
@@ -379,9 +328,6 @@ physeq.spain <- prune_taxa(taxa_sums(physeq.spain) > 1, physeq.spain)
 #Chao Plot
 alpha_bact_spain <- alpha_diversity_plot(physeq.spain, "Microhabitat", paper_metrics, my_comparisons_microhabitat, stat_metrics, asterisk = FALSE, "Spain") + theme(strip.text = element_blank(), axis.title.y=element_blank())
 
-#Obtain alpha-diversity plot complete
-alpha_diversity_plot(physeq.spain, "Microhabitat", metrics, my_comparisons_microhabitat, stat_metrics, asterisk = FALSE, "Spain")
-
 #alpha diversity table
 spain.tb <- estimate_richness(physeq.spain, measures=metrics)
 spain.tb$Microhabitat <- sample_data(physeq.spain)$Microhabitat
@@ -401,9 +347,6 @@ physeq.understory <- prune_taxa(taxa_sums(physeq.understory) > 1, physeq.underst
 #Chao Plot
 alpha_bact_under <- alpha_diversity_plot(physeq.understory, "Country", paper_metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Under") + theme(strip.text = element_blank(), axis.title.y=element_blank())
 
-#Obtain alpha-diversity plot complete
-alpha_diversity_plot(physeq.understory, "Country", metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Understory")
-
 #alpha diversity table
 understory.tb <- estimate_richness(physeq.understory, measures=metrics)
 understory.tb$Country <- sample_data(physeq.understory)$Country
@@ -422,9 +365,6 @@ physeq.gap <- prune_taxa(taxa_sums(physeq.gap) > 1, physeq.gap)
 
 #Chao Plot
 alpha_bact_gap <- alpha_diversity_plot(physeq.gap, "Country", paper_metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Gap") + theme(strip.text = element_blank())
-
-#Obtain alpha-diversity plot complete
-alpha_diversity_plot(physeq.gap, "Country", metrics, my_comparisons_country, stat_metrics, asterisk = FALSE, "Gap")
 
 #alpha diversity table
 gap.tb <- estimate_richness(physeq.gap, measures=metrics)
@@ -702,12 +642,11 @@ df.senegal.understory_mean <- df.senegal.understory %>% group_by(Genus) %>% summ
 df.senegal.mean <- merge(df.senegal.gap_mean, df.senegal.understory_mean, by = "Genus") %>%
  replace(is.na(.), 0)
 
-plt_senegal <- ggplot(df.senegal.mean, aes(x = Understory, y = Gap)) +
+plt_senegal <- ggplot(df.senegal.mean, aes(x = sqrt(Understory), y = sqrt(Gap))) +
   geom_point(alpha = 0.7) +
-  scale_x_log10() + scale_y_log10() +  # Escala logarítmica si hay valores muy pequeños
   geom_abline(slope = 1, intercept = 0, color = "red") + 
-  geom_vline(xintercept = 0.2, linetype = "dashed", color = "darkgreen", size = 1) +
-  geom_hline(yintercept = 0.2, linetype = "dotted", color = "blue", size = 1) +
+  geom_vline(xintercept = sqrt(0.2), linetype = "dashed", color = "darkgreen", size = 1) +
+  geom_hline(yintercept = sqrt(0.2), linetype = "dotted", color = "blue", size = 1) +
   labs(x = "Relative Abundance Understory", 
        y = "Relative Abundance Gap", 
        title = "Senegal") +
@@ -739,12 +678,11 @@ df.spain.understory_mean <- df.spain.understory %>% group_by(Genus) %>% summariz
 df.spain.mean <- merge(df.spain.gap_mean, df.spain.understory_mean, by = "Genus") %>%
  replace(is.na(.), 0)
 
-plt_spain <- ggplot(df.spain.mean, aes(x = Understory, y = Gap)) +
+plt_spain <- ggplot(df.spain.mean, aes(x = sqrt(Understory), y = sqrt(Gap))) +
   geom_point(alpha = 0.7) +
-  scale_x_log10() + scale_y_log10() +  # Logaritmic scale
   geom_abline(slope = 1, intercept = 0, color = "red") + 
-  geom_vline(xintercept = 0.2, linetype = "dashed", color = "darkgreen", size = 1) +
-  geom_hline(yintercept = 0.2, linetype = "dotted", color = "blue", size = 1) +
+  geom_vline(xintercept = sqrt(0.2), linetype = "dashed", color = "darkgreen", size = 1) +
+  geom_hline(yintercept = sqrt(0.2), linetype = "dotted", color = "blue", size = 1) +
   labs(x = "Relative Abundance Understory", 
        y = "Relative Abundance Gap", 
        title = "Spain") +
@@ -770,13 +708,6 @@ ps.senegal.gap.l <- get_taxa_unique(ps.senegal.gap.genus1, taxonomic.rank="Genus
 
 #Filter Senegal Understory by relative abundance
 ps.senegal.understory.genus1 <- filter_taxa(ps.senegal.understory.genus_rel, function(x){ mean(x) >= 0.2}, prune = TRUE)
-
-#Plot Venn Diagram
-lst1 <- list(Gap= ps.senegal.gap.l,
-            Unde= get_taxa_unique(ps.senegal.understory.genus1, taxonomic.rank="Genus"))
-
-ven_sen_bact <- ggVennDiagram(lst1, label_alpha = 0, set_size = 6, label_size = 6) +  scale_fill_gradient(low = "#F4FAFE", high = "#4981BF") +  theme(legend.position = "none") + scale_x_continuous(expand = expansion(mult = .2)) + ggtitle("Senegal")
-ven_sen_bact 
 ```
 
 ```{r SenegalExclusive}
@@ -803,12 +734,6 @@ ps.spain.gap.l <- get_taxa_unique(ps.spain.gap.genus1, taxonomic.rank="Genus")
 #Filter Spain Understory by relative Abundance
 ps.spain.understory.genus1 <- filter_taxa(ps.spain.understory.genus_rel, function(x){ mean(x) >= 0.2}, prune = TRUE)
 
-#Plot Venn Diagram
-lst2 <- list(Gap= ps.spain.gap.l,
-            Unde= get_taxa_unique(ps.spain.understory.genus1, taxonomic.rank="Genus"))
-
-ven_sp_bact <- ggVennDiagram(lst2, label_alpha = 0, set_size = 6, label_size = 6) +  scale_fill_gradient(low = "#F4FAFE", high = "#4981BF") +  theme(legend.position = "none") + scale_x_continuous(expand = expansion(mult = .2)) + ggtitle("Spain")
-ven_sp_bact 
 ```
 
 ```{r SpainExclusive}
