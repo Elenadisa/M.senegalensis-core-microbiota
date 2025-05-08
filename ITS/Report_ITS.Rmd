@@ -403,7 +403,7 @@ bray_permanova <- adonis2(bray_distance ~ SampleType, data = meta, permutations 
 #create label for the plots
 bp_pvalue <- paste("P-value", bray_permanova$`Pr(>F)`[1])
 
-capture.output(bray_permanova, file = "permanova_16S_braydistance.txt")
+capture.output(bray_permanova, file = "permanova_ITS_braydistance.txt")
 bray_permanova_text <- paste("PERMANOVA", bp_pvalue, sep = "\n")
 pander(bray_permanova)
 ```

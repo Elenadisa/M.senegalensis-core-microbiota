@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 #Author: Elena D. Díaz-Santiago
-#This scripts perform the first steps in qiime2 analysis 16S:
+#This scripts perform the first steps in qiime2 analysis ITS:
 #1. Import data in qiime2
 
 source activate qiime2-2023.5
